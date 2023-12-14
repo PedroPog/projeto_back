@@ -1,10 +1,10 @@
 package com.aulas.loginjwt.loja.controller;
 
 import com.aulas.loginjwt.loja.models.Categoria;
-import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.services.CategoriaService;
-import com.aulas.loginjwt.loja.services.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +21,14 @@ public class CategoriaController {
         return categoriaService.listAll();
     }
     @PostMapping("/add")
-    public Categoria addProduto(@RequestBody Categoria categoria){
-       return categoriaService.addCategoria(categoria);
+    public ResponseEntity<Categoria> addProduto(@RequestBody Categoria categoria){
+       try{
+           return ResponseEntity
+                   .status(HttpStatus.CREATED).body(categoriaService.addCategoria(categoria));
+       }catch (IllegalArgumentException e){
+           return ResponseEntity
+                   .notFound().build();
+       }
     }
     @PutMapping("/atualizar")
     public Categoria atualizarProduto(@RequestBody Categoria categoria){
@@ -32,4 +38,6 @@ public class CategoriaController {
     public void deleteProduto(@RequestParam Long id){
         categoriaService.deleteCategoria(id);
     }
+
+
 }

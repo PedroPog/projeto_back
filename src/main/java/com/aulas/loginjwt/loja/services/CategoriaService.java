@@ -1,9 +1,9 @@
 package com.aulas.loginjwt.loja.services;
 
+import com.aulas.loginjwt.auth.models.Usuario;
+import com.aulas.loginjwt.auth.repository.UsuarioRepository;
 import com.aulas.loginjwt.loja.models.Categoria;
-import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.repository.CategoriaRepository;
-import com.aulas.loginjwt.loja.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,8 @@ import java.util.Optional;
 public class CategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     public List<Categoria> listAll(){
         return categoriaRepository.findAll();
@@ -23,6 +25,10 @@ public class CategoriaService {
         if(existingCategoria != null){
             throw new RuntimeException("Já existe um categoria com o mesmo nome: " + categoria.getNome());
         }
+        Usuario usuario = usuarioRepository
+                .findById(categoria.getCodigoUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+        categoria.setNomeUsuario(usuario.getNome());
        return categoriaRepository.save(categoria);
     }
 
@@ -31,7 +37,6 @@ public class CategoriaService {
         if (existingCategoriaOptional.isEmpty()) {
             throw new RuntimeException("Categoria não encontrado com o ID: " + categoria.getId());
         }
-
         Categoria existingCategoria = existingCategoriaOptional.get();
 
         // Verifica se outro Categoria com o mesmo nome já existe
@@ -39,6 +44,10 @@ public class CategoriaService {
             throw new RuntimeException("Já existe um Categoria com o mesmo nome: " + categoria.getNome());
         }
         // Atualiza os dados do Categoria existente
+        Usuario usuario = usuarioRepository
+                .findById(categoria.getCodigoUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+        categoria.setNomeUsuario(usuario.getNome());
         existingCategoria.setNome(categoria.getNome());
         existingCategoria.setCor(categoria.getCor());
         return categoriaRepository.save(existingCategoria);

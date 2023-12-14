@@ -21,6 +21,9 @@ public class ProdutoService {
         if(existingProduto != null){
             throw new RuntimeException("Já existe um produto com o mesmo nome: " + produto.getNome());
         }
+        if(produto.getVarialvel()){
+            produto.setPreco((double) 0);
+        }
        return produtoRepository.save(produto);
     }
 
