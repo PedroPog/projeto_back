@@ -21,8 +21,8 @@ public class ProdutoService {
         if(existingProduto != null){
             throw new RuntimeException("Já existe um produto com o mesmo nome: " + produto.getNome());
         }
-        if(produto.getVarialvel()){
-            produto.setPreco((double) 0);
+        if(produto.getPreco() == 0){
+            throw new RuntimeException("Não pode valor 0 no preço: " + produto.getPreco());
         }
        return produtoRepository.save(produto);
     }
@@ -43,7 +43,7 @@ public class ProdutoService {
         // Atualiza os dados do produto existente
         existingProduto.setNome(produto.getNome());
         existingProduto.setImagem(produto.getImagem());
-        existingProduto.setVarialvel(produto.getVarialvel());
+        existingProduto.setEstoque(produto.getEstoque());
         existingProduto.setPreco(produto.getPreco());
         existingProduto.setCategoria(produto.getCategoria());
 

@@ -10,7 +10,7 @@ public class Produto {
     @Column(nullable = false,unique = true,length = 20)
     private String nome;
     private String imagem;
-    private Boolean varialvel;
+    private Boolean estoque = true;
     private Double preco;
     private String categoria;
 
@@ -38,12 +38,12 @@ public class Produto {
         this.imagem = imagem;
     }
 
-    public Boolean getVarialvel() {
-        return varialvel;
+    public Boolean getEstoque() {
+        return estoque;
     }
 
-    public void setVarialvel(Boolean varialvel) {
-        this.varialvel = varialvel;
+    public void setEstoque(Boolean estoque) {
+        this.estoque = estoque;
     }
 
     public Double getPreco() {
