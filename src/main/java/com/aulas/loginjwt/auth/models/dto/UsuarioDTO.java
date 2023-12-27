@@ -1,31 +1,18 @@
-package com.aulas.loginjwt.auth.models;
+package com.aulas.loginjwt.auth.models.dto;
 
-import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
+import com.aulas.loginjwt.auth.models.Usuario;
+import lombok.Getter;
+import org.springframework.beans.BeanUtils;
 
-@Entity
-public class Usuario{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true,length = 20)
+public class UsuarioDTO {
     private String login;
-    @Column(length = 20)
     private String nome;
-    @Column(nullable = false)
-    private String senha;
-    @Column(nullable = false)
     private String role;
     private String cnpj;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public UsuarioDTO convert(Usuario usuario){
+        BeanUtils.copyProperties(usuario, this);
+        return this;
     }
 
     public String getLogin() {
@@ -42,14 +29,6 @@ public class Usuario{
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 
     public String getRole() {

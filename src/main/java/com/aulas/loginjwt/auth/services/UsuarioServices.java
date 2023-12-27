@@ -1,15 +1,13 @@
 package com.aulas.loginjwt.auth.services;
 
 import com.aulas.loginjwt.auth.models.Usuario;
+import com.aulas.loginjwt.auth.models.dto.UsuarioDTO;
 import com.aulas.loginjwt.auth.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.swing.text.html.Option;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +19,16 @@ public class UsuarioServices {
     @Autowired
     PasswordEncoder encoder;
 
-    public List<Usuario> listAll(){
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> listAll(){
+        List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios = usuarioRepository.findAll();
+        for(Usuario usuario:usuarios){//TODO for serve para converter o usuario em dto
+            UsuarioDTO usuarioDTO = new UsuarioDTO();
+            usuarioDTO.convert(usuario);
+            usuarioDTOS.add(usuarioDTO);
+        }
+        return usuarioDTOS;
     }
     public Usuario addUsuario(Usuario usuario){
         Usuario existingUsuario = usuarioRepository.findByLogin(usuario.getLogin());
@@ -32,7 +38,6 @@ public class UsuarioServices {
         usuario.setSenha(encoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
-
     public Usuario alterarUsuario(Usuario usuario) {
         Optional<Usuario> existingUsuarioOptional = usuarioRepository.findById(usuario.getId());
         if (existingUsuarioOptional.isEmpty()) {
@@ -60,17 +65,19 @@ public class UsuarioServices {
         }
         usuarioRepository.deleteById(id);
     }
-    public Usuario validarSenha(String login,String senha){
-
+    public UsuarioDTO validarSenha(String login,String senha){
         Usuario option = usuarioRepository.findByLogin(login);
+
         if(option == null){
             throw new RuntimeException("Login não encontrado! " +login);
         }
         boolean valid = encoder.matches(senha,option.getSenha());
 
         //HttpStatus status = (valid) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
-        if(valid){
-            return option;
+        if (valid) {
+            UsuarioDTO usuarioDTO = new UsuarioDTO();
+            usuarioDTO.convert(option);
+            return usuarioDTO;
         }
         throw new RuntimeException("Senha errada! " +login);
     }

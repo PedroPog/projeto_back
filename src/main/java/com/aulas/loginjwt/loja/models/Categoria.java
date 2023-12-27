@@ -1,6 +1,8 @@
 package com.aulas.loginjwt.loja.models;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Categoria{
     @Id
@@ -10,7 +12,8 @@ public class Categoria{
     private String nome;
     @Column(nullable = false)
     private String cor;
-
+    @Transient//lista sempre tem que ter Transient pois não é possivel salvar uma lista num banco
+    private List<Produto> produto;
     @Column(nullable = false)
     private String nomeUsuario;
     @Transient
@@ -39,6 +42,14 @@ public class Categoria{
 
     public void setCor(String cor) {
         this.cor = cor;
+    }
+
+    public List<Produto> getProduto() {
+        return produto;
+    }
+
+    public void setProduto(List<Produto> produto) {
+        this.produto = produto;
     }
 
     public String getNomeUsuario() {

@@ -1,6 +1,7 @@
 package com.aulas.loginjwt.auth.controller;
 
 import com.aulas.loginjwt.auth.models.Usuario;
+import com.aulas.loginjwt.auth.models.dto.UsuarioDTO;
 import com.aulas.loginjwt.auth.services.UsuarioServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuario")
+@CrossOrigin
 public class UsuarioController {
 
     @Autowired
     UsuarioServices usuarioServices;
 
     @GetMapping("/listall")
-    public List<Usuario> listAll(){
+    public List<UsuarioDTO> listAll(){
         return usuarioServices.listAll();
     }
     @PostMapping("/add")
@@ -30,7 +32,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/login")
-    public Usuario validarSenha(@RequestParam String login,
+    public UsuarioDTO validarSenha(@RequestParam String login,
                                                 @RequestParam String senha){
         return usuarioServices.validarSenha(login,senha);
     }

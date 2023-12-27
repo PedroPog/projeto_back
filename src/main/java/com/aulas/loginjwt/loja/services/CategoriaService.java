@@ -3,7 +3,9 @@ package com.aulas.loginjwt.loja.services;
 import com.aulas.loginjwt.auth.models.Usuario;
 import com.aulas.loginjwt.auth.repository.UsuarioRepository;
 import com.aulas.loginjwt.loja.models.Categoria;
+import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.repository.CategoriaRepository;
+import com.aulas.loginjwt.loja.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,22 @@ public class CategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
     @Autowired
+    ProdutoRepository produtoRepository;
+    @Autowired
     UsuarioRepository usuarioRepository;
 
     public List<Categoria> listAll(){
-        return categoriaRepository.findAll();
+        List<Categoria> categorias = categoriaRepository.findAll();
+        for (Categoria categoria : categorias) {
+            try {
+                List<Produto> listProduto = findByListProduto(categoria.getId());
+                categoria.setProduto(listProduto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return categorias;
     }
     public Categoria addCategoria(Categoria categoria){
         Categoria existingCategoria = categoriaRepository.findByNome(categoria.getNome());
@@ -63,5 +77,19 @@ public class CategoriaService {
     public boolean findByName(String nome, Long id) {
         Categoria CategoriaExistente = categoriaRepository.findByNomeAndIdNot(nome, id);
         return CategoriaExistente == null;
+    }
+    public Optional<Categoria> findById(Long id){
+        Optional<Categoria> categoria = categoriaRepository.findById(id);
+        if(categoria.isEmpty()){
+            throw new RuntimeException("Categoria não encontrado com o ID: " + id);
+        }
+        return categoria;
+    }
+    private List<Produto> findByListProduto(Long idCategoria){
+        List<Produto> produtos = produtoRepository.findByListProduto(idCategoria);
+        if(produtos.isEmpty()){
+            return produtos;//tem que mandar a list vazia
+        }
+        return produtos;
     }
 }

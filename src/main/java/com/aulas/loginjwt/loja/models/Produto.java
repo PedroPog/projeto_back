@@ -13,6 +13,11 @@ public class Produto {
     private Boolean estoque = true;
     private Double preco;
     private String categoria;
+    private Long idcategoria;
+    @Column(nullable = false)
+    private String nomeUsuario;
+    @Transient
+    private Long codigoUsuario;
 
     public Long getId() {
         return id;
@@ -60,5 +65,29 @@ public class Produto {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public Long getIdcategoria() {
+        return idcategoria;
+    }
+
+    public void setIdcategoria(Long idcategoria) {
+        this.idcategoria = idcategoria;
+    }
+
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
+    }
+
+    public Long getCodigoUsuario() {
+        return codigoUsuario;
+    }
+
+    public void setCodigoUsuario(Long codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
     }
 }

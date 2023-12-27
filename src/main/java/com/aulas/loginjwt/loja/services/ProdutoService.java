@@ -1,5 +1,8 @@
 package com.aulas.loginjwt.loja.services;
 
+import com.aulas.loginjwt.auth.models.Usuario;
+import com.aulas.loginjwt.auth.repository.UsuarioRepository;
+import com.aulas.loginjwt.loja.models.Categoria;
 import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,10 @@ import java.util.Optional;
 public class ProdutoService {
     @Autowired
     ProdutoRepository produtoRepository;
+    @Autowired
+    CategoriaService categoriaService;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     public List<Produto> listAll(){
         return produtoRepository.findAll();
@@ -24,6 +31,15 @@ public class ProdutoService {
         if(produto.getPreco() == 0){
             throw new RuntimeException("Não pode valor 0 no preço: " + produto.getPreco());
         }
+        Usuario usuario = usuarioRepository
+                .findById(produto.getCodigoUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+        produto.setNomeUsuario(usuario.getNome());
+        Optional<Categoria> categoria = categoriaService.findById(produto.getIdcategoria());
+        if(categoria.isEmpty()){
+            throw new RuntimeException("Categoria não encontrado com o ID: " + produto.getIdcategoria());
+        }
+        produto.setCategoria(categoria.get().getNome());
        return produtoRepository.save(produto);
     }
 
@@ -45,8 +61,18 @@ public class ProdutoService {
         existingProduto.setImagem(produto.getImagem());
         existingProduto.setEstoque(produto.getEstoque());
         existingProduto.setPreco(produto.getPreco());
-        existingProduto.setCategoria(produto.getCategoria());
 
+        Usuario usuario = usuarioRepository
+                .findById(produto.getCodigoUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+        produto.setNomeUsuario(usuario.getNome());
+
+        Optional<Categoria> categoria = categoriaService.findById(produto.getIdcategoria());
+        if(categoria.isEmpty()){
+            throw new RuntimeException("Categoria não encontrado com o ID: " + produto.getIdcategoria());
+        }
+        existingProduto.setIdcategoria(produto.getIdcategoria());
+        existingProduto.setCategoria(categoria.get().getNome());
         return produtoRepository.save(existingProduto);
     }
 
@@ -55,7 +81,6 @@ public class ProdutoService {
         if (produtoOptional.isEmpty()) {
             throw new RuntimeException("Produto não encontrado com o ID: " + id);
         }
-
         produtoRepository.deleteById(id);
     }
     public boolean findByName(String nome, Long id) {
