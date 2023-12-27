@@ -43,19 +43,18 @@ public class UsuarioServices {
         if (existingUsuarioOptional.isEmpty()) {
             throw new RuntimeException("Usuario não encontrado com o ID: " + usuario.getId());
         }
-        usuario.setSenha(encoder.encode(usuario.getSenha()));
+
         Usuario existingUsuario = existingUsuarioOptional.get();
+        if(!usuario.getSenha().equals(existingUsuario.getSenha())){
+            usuario.setSenha(encoder.encode(usuario.getSenha()));
+        }//TODO isso salvar meu codigo em muito!!
 
         // Verifica se outro Categoria com o mesmo nome já existe
         if (!findByLogin(usuario.getLogin(),usuario.getId())) {
             throw new RuntimeException("Já existe um Usuario com o mesmo login: " + usuario.getLogin());
         }
-        // Atualiza os dados do Categoria existente
-        existingUsuario.setNome(usuario.getNome());
-        existingUsuario.setLogin(usuario.getLogin());
-        existingUsuario.setSenha(usuario.getSenha());
-        existingUsuario.setRole(usuario.getRole());
-        return usuarioRepository.save(existingUsuario);
+
+        return usuarioRepository.save(usuario);
     }
 
     public void deleteUsuario(Long id) {
