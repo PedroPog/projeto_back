@@ -2,6 +2,8 @@ package com.aulas.loginjwt.loja.services;
 
 import com.aulas.loginjwt.auth.models.Usuario;
 import com.aulas.loginjwt.auth.repository.UsuarioRepository;
+import com.aulas.loginjwt.cliente.models.Cliente;
+import com.aulas.loginjwt.cliente.repository.ClienteRepository;
 import com.aulas.loginjwt.loja.models.Categoria;
 import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.repository.CategoriaRepository;
@@ -20,9 +22,15 @@ public class CategoriaService {
     ProdutoRepository produtoRepository;
     @Autowired
     UsuarioRepository usuarioRepository;
+    @Autowired
+    ClienteRepository clienteRepository;
 
-    public List<Categoria> listAll(){
-        List<Categoria> categorias = categoriaRepository.findAll();
+    public List<Categoria> listAll(String cnpj){
+        boolean valid =findByCnpj(cnpj);
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + cnpj);
+        }
+        List<Categoria> categorias = categoriaRepository.findAllCnpj(cnpj);
         for (Categoria categoria : categorias) {
             try {
                 List<Produto> listProduto = findByListProduto(categoria.getId());
@@ -43,6 +51,11 @@ public class CategoriaService {
                 .findById(categoria.getCodigoUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
         categoria.setNomeUsuario(usuario.getNome());
+        categoria.setCnpj(usuario.getCnpj());
+        boolean valid =findByCnpj(categoria.getCnpj());
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + categoria.getCnpj());
+        }
        return categoriaRepository.save(categoria);
     }
 
@@ -51,8 +64,6 @@ public class CategoriaService {
         if (existingCategoriaOptional.isEmpty()) {
             throw new RuntimeException("Categoria não encontrado com o ID: " + categoria.getId());
         }
-        Categoria existingCategoria = existingCategoriaOptional.get();
-
         // Verifica se outro Categoria com o mesmo nome já existe
         if (!findByName(categoria.getNome(),categoria.getId())) {
             throw new RuntimeException("Já existe um Categoria com o mesmo nome: " + categoria.getNome());
@@ -62,9 +73,13 @@ public class CategoriaService {
                 .findById(categoria.getCodigoUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
         categoria.setNomeUsuario(usuario.getNome());
-        existingCategoria.setNome(categoria.getNome());
-        existingCategoria.setCor(categoria.getCor());
-        return categoriaRepository.save(existingCategoria);
+        categoria.setCnpj(usuario.getCnpj());
+        boolean valid =findByCnpj(categoria.getCnpj());
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + categoria.getCnpj());
+        }
+
+        return categoriaRepository.save(categoria);
     }
 
     public void deleteCategoria(Long id) {
@@ -84,6 +99,13 @@ public class CategoriaService {
             throw new RuntimeException("Categoria não encontrado com o ID: " + id);
         }
         return categoria;
+    }
+    private Boolean findByCnpj(String cnpj){
+        Cliente cliente = clienteRepository.findByCnpj(cnpj);
+        if(cliente == null){
+            throw new RuntimeException("Cnpj do cliente não existe" + cnpj);
+        }
+        return true;
     }
     private List<Produto> findByListProduto(Long idCategoria){
         List<Produto> produtos = produtoRepository.findByListProduto(idCategoria);

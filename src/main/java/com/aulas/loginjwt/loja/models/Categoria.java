@@ -16,9 +16,10 @@ public class Categoria{
     private List<Produto> produto;
     @Column(nullable = false)
     private String nomeUsuario;
+    @Column(nullable = false)
+    private String cnpj;
     @Transient
     private Long codigoUsuario;
-
 
     public Long getId() {
         return id;
@@ -58,6 +59,14 @@ public class Categoria{
 
     public void setNomeUsuario(String nomeUsuario) {
         this.nomeUsuario = nomeUsuario;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public Long getCodigoUsuario() {

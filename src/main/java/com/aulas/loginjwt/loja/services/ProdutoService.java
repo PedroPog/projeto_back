@@ -2,6 +2,8 @@ package com.aulas.loginjwt.loja.services;
 
 import com.aulas.loginjwt.auth.models.Usuario;
 import com.aulas.loginjwt.auth.repository.UsuarioRepository;
+import com.aulas.loginjwt.cliente.models.Cliente;
+import com.aulas.loginjwt.cliente.repository.ClienteRepository;
 import com.aulas.loginjwt.loja.models.Categoria;
 import com.aulas.loginjwt.loja.models.Produto;
 import com.aulas.loginjwt.loja.repository.ProdutoRepository;
@@ -19,9 +21,15 @@ public class ProdutoService {
     CategoriaService categoriaService;
     @Autowired
     UsuarioRepository usuarioRepository;
+    @Autowired
+    ClienteRepository clienteRepository;
 
-    public List<Produto> listAll(){
-        return produtoRepository.findAll();
+    public List<Produto> listAll(String cnpj){
+        boolean valid =findByCnpj(cnpj);
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + cnpj);
+        }
+        return produtoRepository.findAllCnpj(cnpj);
     }
     public Produto addProduto(Produto produto){
         Produto existingProduto = produtoRepository.findByNome(produto.getNome());
@@ -31,10 +39,16 @@ public class ProdutoService {
         if(produto.getPreco() == 0){
             throw new RuntimeException("Não pode valor 0 no preço: " + produto.getPreco());
         }
+
         Usuario usuario = usuarioRepository
                 .findById(produto.getCodigoUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
         produto.setNomeUsuario(usuario.getNome());
+        produto.setCnpj(usuario.getCnpj());
+        boolean valid =findByCnpj(produto.getCnpj());
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + produto.getCnpj());
+        }
         Optional<Categoria> categoria = categoriaService.findById(produto.getIdcategoria());
         if(categoria.isEmpty()){
             throw new RuntimeException("Categoria não encontrado com o ID: " + produto.getIdcategoria());
@@ -66,7 +80,10 @@ public class ProdutoService {
                 .findById(produto.getCodigoUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
         produto.setNomeUsuario(usuario.getNome());
-
+        boolean valid =findByCnpj(produto.getCnpj());
+        if(!valid){
+            throw new RuntimeException("Cnpj do cliente não existe" + produto.getCnpj());
+        }
         Optional<Categoria> categoria = categoriaService.findById(produto.getIdcategoria());
         if(categoria.isEmpty()){
             throw new RuntimeException("Categoria não encontrado com o ID: " + produto.getIdcategoria());
@@ -86,5 +103,12 @@ public class ProdutoService {
     public boolean findByName(String nome, Long id) {
         Produto produtoExistente = produtoRepository.findByNomeAndIdNot(nome, id);
         return produtoExistente == null;
+    }
+    private Boolean findByCnpj(String cnpj){
+        Cliente cliente = clienteRepository.findByCnpj(cnpj);
+        if(cliente == null){
+            throw new RuntimeException("Cnpj do cliente não existe" + cnpj);
+        }
+        return true;
     }
 }

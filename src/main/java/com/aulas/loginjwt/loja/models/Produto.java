@@ -18,6 +18,8 @@ public class Produto {
     private String nomeUsuario;
     @Transient
     private Long codigoUsuario;
+    @Column(nullable = false)
+    private String cnpj;
 
     public Long getId() {
         return id;
@@ -89,5 +91,13 @@ public class Produto {
 
     public void setCodigoUsuario(Long codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 }

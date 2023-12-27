@@ -18,8 +18,11 @@ public class CategoriaController {
     CategoriaService categoriaService;
 
     @GetMapping("/listall")
-    public List<Categoria> listAll(){
-        return categoriaService.listAll();
+    public List<Categoria> listAll(@RequestHeader String cnpj){
+        if(cnpj.isBlank()){
+            throw new RuntimeException("Falta de cnpj!");
+        }
+        return categoriaService.listAll(cnpj);
     }
     @PostMapping("/add")
     public ResponseEntity<Categoria> addProduto(@RequestBody Categoria categoria){

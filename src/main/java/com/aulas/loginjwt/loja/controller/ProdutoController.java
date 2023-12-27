@@ -16,8 +16,10 @@ public class ProdutoController {
     ProdutoService produtoService;
 
     @GetMapping("/listall")
-    public List<Produto> listAll(){
-        return produtoService.listAll();
+    public List<Produto> listAll(@RequestHeader String cnpj){
+        if(cnpj.isBlank()){
+            throw new RuntimeException("Falta de cnpj!");
+        }return produtoService.listAll(cnpj);
     }
     @PostMapping("/add")
     public Produto addProduto(@RequestBody Produto produto){
