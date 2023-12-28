@@ -18,4 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario,Long>{
     @Query("SELECT p FROM Usuario p WHERE p.cnpj = :cnpj")
     List<Usuario> findByListUsuario(@Param("cnpj") String cnpj);
 
+    @Query("SELECT p FROM Usuario p WHERE p.cnpj = :cnpj")
+    Usuario findByUsuario(@Param("cnpj") String cnpj);
+
 }
