@@ -16,7 +16,7 @@ public class ClienteController {
     ClienteService clienteService;
 
     @GetMapping("/listall")
-    public List<Cliente> listAll(){
+    public List<Cliente> listAll(@RequestHeader String login){
         return clienteService.listAll();
     }
     @PostMapping("/add")

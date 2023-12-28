@@ -20,8 +20,9 @@ public class ClienteService {
     UsuarioRepository usuarioRepository;
 
     public List<Cliente> listAll() {
-        List<Cliente> clientes = clienteRepository.findAllByOrderByCnpjAsc();
-        for (Cliente cliente : clientes) {
+        return clienteRepository.findAllByOrderByCnpjAsc();
+        //List<Cliente> clientes = clienteRepository.findAllByOrderByCnpjAsc();
+        /*for (Cliente cliente : clientes) {
             try {
                 List<UsuarioDTO> listUsuario = findByListUsuario(cliente.getCnpj());
                 cliente.setUsuarios(listUsuario);
@@ -29,8 +30,7 @@ public class ClienteService {
                 e.printStackTrace();
                 // Se ocorrer um erro, você pode lidar com ele aqui, por exemplo, logando o erro.
             }
-        }
-        return clientes;
+        }*/
     }
     public Cliente save(Cliente cliente){
         if (findByCnpj(cliente.getCnpj(), cliente.getId())) {
